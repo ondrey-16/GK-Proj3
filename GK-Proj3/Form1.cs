@@ -5,6 +5,8 @@ namespace GK_Proj3
         public Form1()
         {
             InitializeComponent();
+            fullImageButton.Checked = true;
+            identicalityFilterButton.Checked = true;
         }
 
         private void addImageToolStripMenuItem_Click(object sender, EventArgs e)
@@ -17,6 +19,11 @@ namespace GK_Proj3
                     imagePictureBox.Image = Image.FromFile(fileDialog.FileName);
                 }
             }
+        }
+
+        private void circleBrushRadiusTrackBar_Scroll(object sender, EventArgs e)
+        {
+            radiusLabel.Text = $"{circleBrushRadiusTrackBar.Value}";
         }
     }
 }
