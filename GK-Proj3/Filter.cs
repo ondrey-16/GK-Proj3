@@ -42,7 +42,7 @@ namespace GK_Proj3
                 return;
             }
             Color[,] filteredImage = new Color[image.GetLength(0), image.GetLength(1)];
-            for (int x = 0; x < image.GetLength(0); x++)
+            Parallel.For(0, image.GetLength(1), x =>
             {
                 for (int y = 0; y < image.GetLength(1); y++)
                 {
@@ -63,7 +63,7 @@ namespace GK_Proj3
                                                  Math.Clamp(Shift + (int)(addG / Divider), 0, 255),
                                                  Math.Clamp(Shift + (int)(addB / Divider), 0, 255));
                 }
-            }
+            });
             for (int x = 0; x < image.GetLength(0); x++)
             {
                 for (int y = 0; y < image.GetLength(1); y++)
@@ -80,7 +80,10 @@ namespace GK_Proj3
                 return;
             }
 
-            for (int x = Math.Max(0, brushPoint.X - brushRadius); x <= Math.Min(brushPoint.X + brushRadius, image.GetLength(0)); x++)
+            int startX = Math.Max(0, brushPoint.X - brushRadius);
+            int endX = Math.Min(brushPoint.X + brushRadius, image.GetLength(0));
+
+            Parallel.For(startX, endX, x =>
             {
                 for (int y = Math.Max(0, brushPoint.Y - brushRadius); y <= Math.Min(brushPoint.Y + brushRadius, image.GetLength(1)); y++)
                 {
@@ -106,7 +109,7 @@ namespace GK_Proj3
                                                 Math.Clamp(Shift + (int)(addB / Divider), 0, 255));
                     }
                 }
-            }
+            });
         }
     }
 }
