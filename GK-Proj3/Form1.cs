@@ -1,3 +1,5 @@
+using System.Drawing;
+
 namespace GK_Proj3
 {
     public enum FilterType
@@ -23,6 +25,11 @@ namespace GK_Proj3
         private readonly int[] redCounts;
         private readonly int[] greenCounts;
         private readonly int[] blueCounts;
+
+        private Point? brushPoint;
+        private int brushRadius;
+        private bool brushPainting;
+        private Color[,]? brushFilteredImageColors;
         public Form1()
         {
             InitializeComponent();
@@ -37,6 +44,7 @@ namespace GK_Proj3
             redCounts = new int[256];
             greenCounts = new int[256];
             blueCounts = new int[256];
+            brushRadius = circleBrushRadiusTrackBar.Value;
         }
 
         private void addImageToolStripMenuItem_Click(object sender, EventArgs e)
@@ -65,6 +73,7 @@ namespace GK_Proj3
         private void circleBrushRadiusTrackBar_Scroll(object sender, EventArgs e)
         {
             radiusLabel.Text = $"{circleBrushRadiusTrackBar.Value}";
+            brushRadius = circleBrushRadiusTrackBar.Value;
         }
 
         private void setBitmapPixels()
@@ -126,21 +135,24 @@ namespace GK_Proj3
 
         private void filterButton_Click(object sender, EventArgs e)
         {
-            filter = filterType switch
+            if (fullImageButton.Checked)
             {
-                FilterType.Identicality => new IdenticalityFilter(shift, divider),
-                FilterType.Blur => new BlurFilter(shift, divider),
-                FilterType.Sharpening => new SharpeningFilter(shift, divider),
-                FilterType.BasRelief => new BasReliefFilter(shift, divider),
-                FilterType.EdgeDetection => new EdgeDetectionFilter(shift, divider),
-                FilterType.Custom => new CustomFilter(shift, divider, m),
-                _ => null
-            };
-            filter?.FilterImage(imageColors);
-            setBitmapPixels();
+                filter = filterType switch
+                {
+                    FilterType.Identicality => new IdenticalityFilter(shift, divider),
+                    FilterType.Blur => new BlurFilter(shift, divider),
+                    FilterType.Sharpening => new SharpeningFilter(shift, divider),
+                    FilterType.BasRelief => new BasReliefFilter(shift, divider),
+                    FilterType.EdgeDetection => new EdgeDetectionFilter(shift, divider),
+                    FilterType.Custom => new CustomFilter(shift, divider, m),
+                    _ => null
+                };
+                filter?.FilterImage(imageColors);
+                setBitmapPixels();
 
-            updateCharts();
-            imagePictureBox.Invalidate();
+                updateCharts();
+                imagePictureBox.Invalidate();
+            }
         }
 
         private void changeMatrixEnabledState(bool enabled)
@@ -273,6 +285,91 @@ namespace GK_Proj3
             }
             updateCharts();
             imagePictureBox.Invalidate();
+        }
+
+        private void imagePictureBox_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (brushPainting && brushFilteredImageColors is not null && imageColors is not null)
+            {
+                for (int x = 0; x < imageColors.GetLength(0); x++)
+                {
+                    for (int y = 0; y < imageColors.GetLength(1); y++)
+                    {
+                        imageColors[x, y] = Color.FromArgb(brushFilteredImageColors[x, y].R, 
+                                                    brushFilteredImageColors[x, y].G, brushFilteredImageColors[x, y].B);
+                    }
+                }
+            }
+            brushFilteredImageColors = null;
+            brushPainting = false;
+            setBitmapPixels();
+
+            updateCharts();
+            imagePictureBox.Invalidate();
+        }
+
+        private void imagePictureBox_MouseMove(object sender, MouseEventArgs e)
+        {
+            brushPoint = e.Location;
+            if (brushPainting)
+            {
+                filter?.FilterImageWithBrush(imageColors, brushFilteredImageColors, e.Location, brushRadius);
+            }
+
+            imagePictureBox.Invalidate();
+        }
+
+        private void imagePictureBox_MouseLeave(object sender, EventArgs e)
+        {
+            brushPainting = false;
+            brushPoint = null;
+            imagePictureBox.Invalidate();
+        }
+
+        private void imagePictureBox_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (circleBrushButton.Checked && e.Button == MouseButtons.Left)
+            {
+                brushPainting = true;
+            }
+            brushPoint = e.Location;
+            brushFilteredImageColors = (imageColors is not null) ? new Color[imageColors.GetLength(0), imageColors.GetLength(1)] : null;
+            if (brushFilteredImageColors is not null && imageColors is not null)
+            {
+                for (int x = 0; x < brushFilteredImageColors.GetLength(0); x++)
+                {
+                    for (int y = 0; y < brushFilteredImageColors.GetLength(1); y++)
+                    {
+                        brushFilteredImageColors[x, y] = Color.FromArgb(imageColors[x, y].R, imageColors[x, y].G, imageColors[x, y].B);
+                    }
+                }
+                filter = filterType switch
+                {
+                    FilterType.Identicality => new IdenticalityFilter(shift, divider),
+                    FilterType.Blur => new BlurFilter(shift, divider),
+                    FilterType.Sharpening => new SharpeningFilter(shift, divider),
+                    FilterType.BasRelief => new BasReliefFilter(shift, divider),
+                    FilterType.EdgeDetection => new EdgeDetectionFilter(shift, divider),
+                    FilterType.Custom => new CustomFilter(shift, divider, m),
+                    _ => null
+                };
+                filter?.FilterImageWithBrush(imageColors, brushFilteredImageColors, e.Location, brushRadius);
+            }
+            imagePictureBox.Invalidate();
+        }
+
+        private void imagePictureBox_Paint(object sender, PaintEventArgs e)
+        {
+            if (brushPoint is null || !circleBrushButton.Checked)
+            {
+                return;
+            }
+
+            using Pen p = new Pen(Color.Gray);
+            p.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
+
+            e.Graphics.DrawEllipse(p, brushPoint.Value.X - brushRadius,
+                                    brushPoint.Value.Y - brushRadius, brushRadius * 2, brushRadius * 2);
         }
     }
 }

@@ -72,5 +72,41 @@ namespace GK_Proj3
                 }
             }
         }
+
+        public void FilterImageWithBrush(Color[,]? image, Color[,]? brushFilteredImageColors, Point brushPoint, int brushRadius)
+        {
+            if (image is null || brushFilteredImageColors is null)
+            {
+                return;
+            }
+
+            for (int x = Math.Max(0, brushPoint.X - brushRadius); x <= Math.Min(brushPoint.X + brushRadius, image.GetLength(0)); x++)
+            {
+                for (int y = Math.Max(0, brushPoint.Y - brushRadius); y <= Math.Min(brushPoint.Y + brushRadius, image.GetLength(1)); y++)
+                {
+                    int dx = x - brushPoint.X;
+                    int dy = y - brushPoint.Y;
+                    if (dx * dx + dy * dy <= brushRadius * brushRadius)
+                    {
+                        float addR = 0, addG = 0, addB = 0;
+                        for (int i = 0; i < 3; i++)
+                        {
+                            for (int j = 0; j < 3; j++)
+                            {
+                                if (x + i - 1 < image.GetLength(0) && x + i - 1 >= 0 && y + j - 1 < image.GetLength(1) && y + j - 1 >= 0)
+                                {
+                                    addR += M[i, j] * image[x + i - 1, y + j - 1].R;
+                                    addG += M[i, j] * image[x + i - 1, y + j - 1].G;
+                                    addB += M[i, j] * image[x + i - 1, y + j - 1].B;
+                                }
+                            }
+                        }
+                        brushFilteredImageColors[x, y] = Color.FromArgb(Math.Clamp(Shift + (int)(addR / Divider), 0, 255),
+                                                Math.Clamp(Shift + (int)(addG / Divider), 0, 255),
+                                                Math.Clamp(Shift + (int)(addB / Divider), 0, 255));
+                    }
+                }
+            }
+        }
     }
 }

@@ -125,6 +125,11 @@
             imagePictureBox.SizeMode = PictureBoxSizeMode.AutoSize;
             imagePictureBox.TabIndex = 1;
             imagePictureBox.TabStop = false;
+            imagePictureBox.Paint += imagePictureBox_Paint;
+            imagePictureBox.MouseDown += imagePictureBox_MouseDown;
+            imagePictureBox.MouseLeave += imagePictureBox_MouseLeave;
+            imagePictureBox.MouseMove += imagePictureBox_MouseMove;
+            imagePictureBox.MouseUp += imagePictureBox_MouseUp;
             // 
             // blueChart
             // 
