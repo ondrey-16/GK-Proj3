@@ -30,6 +30,7 @@
         {
             splitContainer = new SplitContainer();
             imagePictureBox = new PictureBox();
+            filterButton = new Button();
             matrixFilterChoiceGroupBox = new GroupBox();
             automaticDividerCheckBox = new CheckBox();
             dividerNumericUpDown = new NumericUpDown();
@@ -94,6 +95,7 @@
             // 
             // splitContainer.Panel2
             // 
+            splitContainer.Panel2.Controls.Add(filterButton);
             splitContainer.Panel2.Controls.Add(matrixFilterChoiceGroupBox);
             splitContainer.Panel2.Controls.Add(filterUsageGroupBox);
             splitContainer.Size = new Size(1578, 911);
@@ -108,6 +110,16 @@
             imagePictureBox.SizeMode = PictureBoxSizeMode.AutoSize;
             imagePictureBox.TabIndex = 1;
             imagePictureBox.TabStop = false;
+            // 
+            // filterButton
+            // 
+            filterButton.Location = new Point(455, 756);
+            filterButton.Name = "filterButton";
+            filterButton.Size = new Size(112, 34);
+            filterButton.TabIndex = 2;
+            filterButton.Text = "Filter";
+            filterButton.UseVisualStyleBackColor = true;
+            filterButton.Click += filterButton_Click;
             // 
             // matrixFilterChoiceGroupBox
             // 
@@ -147,6 +159,7 @@
             automaticDividerCheckBox.TabIndex = 20;
             automaticDividerCheckBox.Text = "Automatic divider computing";
             automaticDividerCheckBox.UseVisualStyleBackColor = true;
+            automaticDividerCheckBox.CheckedChanged += automaticDividerCheckBox_CheckedChanged;
             // 
             // dividerNumericUpDown
             // 
@@ -159,6 +172,7 @@
             dividerNumericUpDown.Size = new Size(192, 31);
             dividerNumericUpDown.TabIndex = 19;
             dividerNumericUpDown.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            dividerNumericUpDown.ValueChanged += dividerNumericUpDown_ValueChanged;
             // 
             // shiftNumericUpDown
             // 
@@ -167,6 +181,7 @@
             shiftNumericUpDown.Name = "shiftNumericUpDown";
             shiftNumericUpDown.Size = new Size(192, 31);
             shiftNumericUpDown.TabIndex = 18;
+            shiftNumericUpDown.ValueChanged += shiftNumericUpDown_ValueChanged;
             // 
             // dividerLabel
             // 
@@ -197,6 +212,7 @@
             numericUpDown9.Size = new Size(84, 31);
             numericUpDown9.TabIndex = 15;
             numericUpDown9.Value = new decimal(new int[] { 1000, 0, 0, 196608 });
+            numericUpDown9.ValueChanged += numericUpDown9_ValueChanged;
             // 
             // numericUpDown8
             // 
@@ -209,6 +225,7 @@
             numericUpDown8.Size = new Size(84, 31);
             numericUpDown8.TabIndex = 14;
             numericUpDown8.Value = new decimal(new int[] { 1000, 0, 0, 196608 });
+            numericUpDown8.ValueChanged += numericUpDown8_ValueChanged;
             // 
             // numericUpDown7
             // 
@@ -221,6 +238,7 @@
             numericUpDown7.Size = new Size(84, 31);
             numericUpDown7.TabIndex = 13;
             numericUpDown7.Value = new decimal(new int[] { 1000, 0, 0, 196608 });
+            numericUpDown7.ValueChanged += numericUpDown7_ValueChanged;
             // 
             // numericUpDown6
             // 
@@ -233,6 +251,7 @@
             numericUpDown6.Size = new Size(84, 31);
             numericUpDown6.TabIndex = 12;
             numericUpDown6.Value = new decimal(new int[] { 1000, 0, 0, 196608 });
+            numericUpDown6.ValueChanged += numericUpDown6_ValueChanged;
             // 
             // numericUpDown5
             // 
@@ -245,6 +264,7 @@
             numericUpDown5.Size = new Size(84, 31);
             numericUpDown5.TabIndex = 11;
             numericUpDown5.Value = new decimal(new int[] { 1000, 0, 0, 196608 });
+            numericUpDown5.ValueChanged += numericUpDown5_ValueChanged;
             // 
             // numericUpDown4
             // 
@@ -257,6 +277,7 @@
             numericUpDown4.Size = new Size(84, 31);
             numericUpDown4.TabIndex = 10;
             numericUpDown4.Value = new decimal(new int[] { 1000, 0, 0, 196608 });
+            numericUpDown4.ValueChanged += numericUpDown4_ValueChanged;
             // 
             // numericUpDown3
             // 
@@ -269,6 +290,7 @@
             numericUpDown3.Size = new Size(84, 31);
             numericUpDown3.TabIndex = 9;
             numericUpDown3.Value = new decimal(new int[] { 1000, 0, 0, 196608 });
+            numericUpDown3.ValueChanged += numericUpDown3_ValueChanged;
             // 
             // numericUpDown2
             // 
@@ -281,6 +303,7 @@
             numericUpDown2.Size = new Size(84, 31);
             numericUpDown2.TabIndex = 8;
             numericUpDown2.Value = new decimal(new int[] { 1000, 0, 0, 196608 });
+            numericUpDown2.ValueChanged += numericUpDown2_ValueChanged;
             // 
             // numericUpDown1
             // 
@@ -293,6 +316,7 @@
             numericUpDown1.Size = new Size(84, 31);
             numericUpDown1.TabIndex = 7;
             numericUpDown1.Value = new decimal(new int[] { 1000, 0, 0, 196608 });
+            numericUpDown1.ValueChanged += numericUpDown1_ValueChanged;
             // 
             // blurFilterButton
             // 
@@ -304,6 +328,7 @@
             blurFilterButton.TabStop = true;
             blurFilterButton.Text = "Blur";
             blurFilterButton.UseVisualStyleBackColor = true;
+            blurFilterButton.CheckedChanged += blurFilterButton_CheckedChanged;
             // 
             // sharpeningFilterButton
             // 
@@ -315,6 +340,7 @@
             sharpeningFilterButton.TabStop = true;
             sharpeningFilterButton.Text = "Sharpening";
             sharpeningFilterButton.UseVisualStyleBackColor = true;
+            sharpeningFilterButton.CheckedChanged += sharpeningFilterButton_CheckedChanged;
             // 
             // basReliefFilterButton
             // 
@@ -326,6 +352,7 @@
             basReliefFilterButton.TabStop = true;
             basReliefFilterButton.Text = "Bas-relief";
             basReliefFilterButton.UseVisualStyleBackColor = true;
+            basReliefFilterButton.CheckedChanged += basReliefFilterButton_CheckedChanged;
             // 
             // identicalityFilterButton
             // 
@@ -337,6 +364,7 @@
             identicalityFilterButton.TabStop = true;
             identicalityFilterButton.Text = "Identicality";
             identicalityFilterButton.UseVisualStyleBackColor = true;
+            identicalityFilterButton.CheckedChanged += identicalityFilterButton_CheckedChanged;
             // 
             // edgeDetectionFilterChoice
             // 
@@ -348,6 +376,7 @@
             edgeDetectionFilterChoice.TabStop = true;
             edgeDetectionFilterChoice.Text = "Edge Detection";
             edgeDetectionFilterChoice.UseVisualStyleBackColor = true;
+            edgeDetectionFilterChoice.CheckedChanged += edgeDetectionFilterChoice_CheckedChanged;
             // 
             // customFilter
             // 
@@ -359,6 +388,7 @@
             customFilter.TabStop = true;
             customFilter.Text = "Custom";
             customFilter.UseVisualStyleBackColor = true;
+            customFilter.CheckedChanged += customFilter_CheckedChanged;
             // 
             // filterUsageGroupBox
             // 
@@ -391,6 +421,7 @@
             clearButton.TabIndex = 3;
             clearButton.Text = "Clear";
             clearButton.UseVisualStyleBackColor = true;
+            clearButton.Click += clearButton_Click;
             // 
             // circleBrushRadiusTrackBar
             // 
@@ -513,5 +544,6 @@
         private CheckBox automaticDividerCheckBox;
         private NumericUpDown dividerNumericUpDown;
         private NumericUpDown shiftNumericUpDown;
+        private Button filterButton;
     }
 }
