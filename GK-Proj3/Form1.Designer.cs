@@ -28,8 +28,17 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             splitContainer = new SplitContainer();
             imagePictureBox = new PictureBox();
+            blueChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            greenChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            redChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             filterButton = new Button();
             matrixFilterChoiceGroupBox = new GroupBox();
             automaticDividerCheckBox = new CheckBox();
@@ -65,6 +74,9 @@
             splitContainer.Panel2.SuspendLayout();
             splitContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)imagePictureBox).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)blueChart).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)greenChart).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)redChart).BeginInit();
             matrixFilterChoiceGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dividerNumericUpDown).BeginInit();
             ((System.ComponentModel.ISupportInitialize)shiftNumericUpDown).BeginInit();
@@ -95,6 +107,9 @@
             // 
             // splitContainer.Panel2
             // 
+            splitContainer.Panel2.Controls.Add(blueChart);
+            splitContainer.Panel2.Controls.Add(greenChart);
+            splitContainer.Panel2.Controls.Add(redChart);
             splitContainer.Panel2.Controls.Add(filterButton);
             splitContainer.Panel2.Controls.Add(matrixFilterChoiceGroupBox);
             splitContainer.Panel2.Controls.Add(filterUsageGroupBox);
@@ -110,6 +125,56 @@
             imagePictureBox.SizeMode = PictureBoxSizeMode.AutoSize;
             imagePictureBox.TabIndex = 1;
             imagePictureBox.TabStop = false;
+            // 
+            // blueChart
+            // 
+            chartArea1.AxisX.LabelStyle.Enabled = false;
+            chartArea1.AxisY.LabelStyle.Enabled = false;
+            chartArea1.Name = "ChartArea1";
+            blueChart.ChartAreas.Add(chartArea1);
+            blueChart.Location = new Point(3, 555);
+            blueChart.Name = "blueChart";
+            series1.ChartArea = "ChartArea1";
+            series1.Color = Color.Blue;
+            series1.Name = "Series1";
+            blueChart.Series.Add(series1);
+            blueChart.Size = new Size(323, 244);
+            blueChart.TabIndex = 4;
+            blueChart.Text = "Blue color chart";
+            // 
+            // greenChart
+            // 
+            chartArea2.AxisX.LabelStyle.Enabled = false;
+            chartArea2.AxisY.LabelStyle.Enabled = false;
+            chartArea2.Name = "ChartArea1";
+            greenChart.ChartAreas.Add(chartArea2);
+            greenChart.Location = new Point(3, 278);
+            greenChart.Name = "greenChart";
+            greenChart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.None;
+            series2.ChartArea = "ChartArea1";
+            series2.Color = Color.Lime;
+            series2.Name = "Series1";
+            greenChart.Series.Add(series2);
+            greenChart.Size = new Size(323, 244);
+            greenChart.TabIndex = 3;
+            greenChart.Text = "chart2";
+            // 
+            // redChart
+            // 
+            chartArea3.AxisX.LabelStyle.Enabled = false;
+            chartArea3.AxisY.LabelStyle.Enabled = false;
+            chartArea3.Name = "ChartArea1";
+            redChart.ChartAreas.Add(chartArea3);
+            redChart.Location = new Point(3, 3);
+            redChart.Name = "redChart";
+            redChart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.None;
+            series3.ChartArea = "ChartArea1";
+            series3.Color = Color.Red;
+            series3.Name = "Series1";
+            redChart.Series.Add(series3);
+            redChart.Size = new Size(323, 244);
+            redChart.TabIndex = 2;
+            redChart.Text = "chart1";
             // 
             // filterButton
             // 
@@ -489,6 +554,9 @@
             ((System.ComponentModel.ISupportInitialize)splitContainer).EndInit();
             splitContainer.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)imagePictureBox).EndInit();
+            ((System.ComponentModel.ISupportInitialize)blueChart).EndInit();
+            ((System.ComponentModel.ISupportInitialize)greenChart).EndInit();
+            ((System.ComponentModel.ISupportInitialize)redChart).EndInit();
             matrixFilterChoiceGroupBox.ResumeLayout(false);
             matrixFilterChoiceGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)dividerNumericUpDown).EndInit();
@@ -545,5 +613,8 @@
         private NumericUpDown dividerNumericUpDown;
         private NumericUpDown shiftNumericUpDown;
         private Button filterButton;
+        private System.Windows.Forms.DataVisualization.Charting.Chart blueChart;
+        private System.Windows.Forms.DataVisualization.Charting.Chart redChart;
+        private System.Windows.Forms.DataVisualization.Charting.Chart greenChart;
     }
 }
