@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Windows.Forms.AxHost;
 
 namespace GK_Proj3
 {
@@ -35,81 +37,109 @@ namespace GK_Proj3
             Shift = shift;
             userDivider = divider;
         }
-        public void FilterImage(Color[,]? image)
+        public unsafe void FilterImage(Color[,]? oryginalImage, Bitmap? bitmap, int[] redCounts, int[] greenCounts, int[] blueCounts)
         { 
-            if (image is null)
+            if (oryginalImage is null || bitmap is null)
             {
                 return;
             }
-            Color[,] filteredImage = new Color[image.GetLength(0), image.GetLength(1)];
-            Parallel.For(0, image.GetLength(1), x =>
+
+            BitmapData bd = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+            byte* scan0 = (byte*)bd.Scan0;
+            int stride = bd.Stride;
+
+            for (int y = 0; y < oryginalImage.GetLength(1); y++)
             {
-                for (int y = 0; y < image.GetLength(1); y++)
+                byte* currRow = scan0 + (y * stride);
+                for (int x = 0; x < oryginalImage.GetLength(0); x++)
                 {
+                    int offset = x * 4;
+
+                    blueCounts[currRow[offset]]--;
+                    greenCounts[currRow[offset + 1]]--;
+                    redCounts[currRow[offset + 2]]--;
+
                     float addR = 0, addG = 0, addB = 0;
                     for (int i = 0; i < 3; i++)
                     {
                         for (int j = 0; j < 3; j++)
                         {
-                            if (x + i - 1 < image.GetLength(0) && x + i - 1 >= 0 && y + j - 1 < image.GetLength(1) && y + j - 1 >= 0)
+                            if (x + i - 1 < oryginalImage.GetLength(0) && x + i - 1 >= 0 && y + j - 1 < oryginalImage.GetLength(1) && y + j - 1 >= 0)
                             {
-                                addR += M[i, j] * image[x + i - 1, y + j - 1].R;
-                                addG += M[i, j] * image[x + i - 1, y + j - 1].G;
-                                addB += M[i, j] * image[x + i - 1, y + j - 1].B;
+                                addR += M[i, j] * oryginalImage[x + i - 1, y + j - 1].R;
+                                addG += M[i, j] * oryginalImage[x + i - 1, y + j - 1].G;
+                                addB += M[i, j] * oryginalImage[x + i - 1, y + j - 1].B;
                             }
                         }
                     }
-                    filteredImage[x, y] = Color.FromArgb(Math.Clamp(Shift + (int)(addR / Divider), 0, 255),
-                                                 Math.Clamp(Shift + (int)(addG / Divider), 0, 255),
-                                                 Math.Clamp(Shift + (int)(addB / Divider), 0, 255));
-                }
-            });
-            for (int x = 0; x < image.GetLength(0); x++)
-            {
-                for (int y = 0; y < image.GetLength(1); y++)
-                {
-                    image[x, y] = Color.FromArgb(filteredImage[x, y].R, filteredImage[x, y].G, filteredImage[x, y].B);
+
+                    currRow[offset] = (byte)Math.Clamp(Shift + (int)(addB / Divider), 0, 255);
+                    currRow[offset + 1] = (byte)Math.Clamp(Shift + (int)(addG / Divider), 0, 255);
+                    currRow[offset + 2] = (byte)Math.Clamp(Shift + (int)(addR / Divider), 0, 255);
+                    currRow[offset + 3] = 255;
+
+                    blueCounts[currRow[offset]]++;
+                    greenCounts[currRow[offset + 1]]++;
+                    redCounts[currRow[offset + 2]]++;
                 }
             }
+            bitmap.UnlockBits(bd);
         }
 
-        public void FilterImageWithBrush(Color[,]? image, Color[,]? brushFilteredImageColors, Point brushPoint, int brushRadius)
+        public unsafe void FilterImageWithBrush(Color[,]? oryginalImage, Bitmap? bitmap, Point brushPoint, int brushRadius, int[] redCounts, int[] greenCounts, int[] blueCounts)
         {
-            if (image is null || brushFilteredImageColors is null)
+            if (oryginalImage is null || bitmap is null)
             {
                 return;
             }
+            int startY = Math.Max(0, brushPoint.Y - brushRadius);
+            int endY= Math.Min(brushPoint.Y + brushRadius, oryginalImage.GetLength(1) - 1);
 
-            int startX = Math.Max(0, brushPoint.X - brushRadius);
-            int endX = Math.Min(brushPoint.X + brushRadius, image.GetLength(0));
+            BitmapData bd = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+            byte* scan0 = (byte*)bd.Scan0;
+            int stride = bd.Stride;
 
-            Parallel.For(startX, endX, x =>
+            for (int y = startY; y <= endY; y++)
             {
-                for (int y = Math.Max(0, brushPoint.Y - brushRadius); y <= Math.Min(brushPoint.Y + brushRadius, image.GetLength(1)); y++)
+                byte* currRow = scan0 + (y * stride);
+                int dy = y - brushPoint.Y;
+                for (int x = Math.Max(0, brushPoint.X - brushRadius); x <= Math.Min(brushPoint.X + brushRadius, oryginalImage.GetLength(0) - 1); x++)
                 {
                     int dx = x - brushPoint.X;
-                    int dy = y - brushPoint.Y;
                     if (dx * dx + dy * dy <= brushRadius * brushRadius)
                     {
+                        int offset = x * 4;
+
+                        blueCounts[currRow[offset]]--;
+                        greenCounts[currRow[offset + 1]]--;
+                        redCounts[currRow[offset + 2]]--;
+
                         float addR = 0, addG = 0, addB = 0;
                         for (int i = 0; i < 3; i++)
                         {
                             for (int j = 0; j < 3; j++)
                             {
-                                if (x + i - 1 < image.GetLength(0) && x + i - 1 >= 0 && y + j - 1 < image.GetLength(1) && y + j - 1 >= 0)
+                                if (x + i - 1 < oryginalImage.GetLength(0) && x + i - 1 >= 0 && y + j - 1 < oryginalImage.GetLength(1) && y + j - 1 >= 0)
                                 {
-                                    addR += M[i, j] * image[x + i - 1, y + j - 1].R;
-                                    addG += M[i, j] * image[x + i - 1, y + j - 1].G;
-                                    addB += M[i, j] * image[x + i - 1, y + j - 1].B;
+                                    addR += M[i, j] * oryginalImage[x + i - 1, y + j - 1].R;
+                                    addG += M[i, j] * oryginalImage[x + i - 1, y + j - 1].G;
+                                    addB += M[i, j] * oryginalImage[x + i - 1, y + j - 1].B;
                                 }
                             }
                         }
-                        brushFilteredImageColors[x, y] = Color.FromArgb(Math.Clamp(Shift + (int)(addR / Divider), 0, 255),
-                                                Math.Clamp(Shift + (int)(addG / Divider), 0, 255),
-                                                Math.Clamp(Shift + (int)(addB / Divider), 0, 255));
+                        currRow[offset] = (byte)Math.Clamp(Shift + (int)(addB / Divider), 0, 255);
+                        currRow[offset + 1] = (byte)Math.Clamp(Shift + (int)(addG / Divider), 0, 255);
+                        currRow[offset + 2] = (byte)Math.Clamp(Shift + (int)(addR / Divider), 0, 255);
+                        currRow[offset + 3] = 255;
+
+                        blueCounts[currRow[offset]]++;
+                        greenCounts[currRow[offset + 1]]++;
+                        redCounts[currRow[offset + 2]]++;
                     }
                 }
-            });
+            }
+
+            bitmap.UnlockBits(bd);
         }
     }
 }

@@ -114,14 +114,14 @@
             splitContainer.Panel2.Controls.Add(matrixFilterChoiceGroupBox);
             splitContainer.Panel2.Controls.Add(filterUsageGroupBox);
             splitContainer.Size = new Size(1578, 911);
-            splitContainer.SplitterDistance = 900;
+            splitContainer.SplitterDistance = 899;
             splitContainer.TabIndex = 0;
             // 
             // imagePictureBox
             // 
-            imagePictureBox.Location = new Point(-13, -30);
+            imagePictureBox.Location = new Point(0, 0);
             imagePictureBox.Name = "imagePictureBox";
-            imagePictureBox.Size = new Size(944, 944);
+            imagePictureBox.Size = new Size(885, 885);
             imagePictureBox.SizeMode = PictureBoxSizeMode.AutoSize;
             imagePictureBox.TabIndex = 1;
             imagePictureBox.TabStop = false;
@@ -137,13 +137,13 @@
             chartArea1.AxisY.LabelStyle.Enabled = false;
             chartArea1.Name = "ChartArea1";
             blueChart.ChartAreas.Add(chartArea1);
-            blueChart.Location = new Point(3, 555);
+            blueChart.Location = new Point(36, 546);
             blueChart.Name = "blueChart";
             series1.ChartArea = "ChartArea1";
             series1.Color = Color.Blue;
             series1.Name = "Series1";
             blueChart.Series.Add(series1);
-            blueChart.Size = new Size(323, 244);
+            blueChart.Size = new Size(270, 244);
             blueChart.TabIndex = 4;
             blueChart.Text = "Blue color chart";
             // 
@@ -153,14 +153,14 @@
             chartArea2.AxisY.LabelStyle.Enabled = false;
             chartArea2.Name = "ChartArea1";
             greenChart.ChartAreas.Add(chartArea2);
-            greenChart.Location = new Point(3, 278);
+            greenChart.Location = new Point(36, 278);
             greenChart.Name = "greenChart";
             greenChart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.None;
             series2.ChartArea = "ChartArea1";
             series2.Color = Color.Lime;
             series2.Name = "Series1";
             greenChart.Series.Add(series2);
-            greenChart.Size = new Size(323, 244);
+            greenChart.Size = new Size(270, 244);
             greenChart.TabIndex = 3;
             greenChart.Text = "chart2";
             // 
@@ -170,20 +170,20 @@
             chartArea3.AxisY.LabelStyle.Enabled = false;
             chartArea3.Name = "ChartArea1";
             redChart.ChartAreas.Add(chartArea3);
-            redChart.Location = new Point(3, 3);
+            redChart.Location = new Point(36, 15);
             redChart.Name = "redChart";
             redChart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.None;
             series3.ChartArea = "ChartArea1";
             series3.Color = Color.Red;
             series3.Name = "Series1";
             redChart.Series.Add(series3);
-            redChart.Size = new Size(323, 244);
+            redChart.Size = new Size(270, 244);
             redChart.TabIndex = 2;
             redChart.Text = "chart1";
             // 
             // filterButton
             // 
-            filterButton.Location = new Point(455, 756);
+            filterButton.Location = new Point(456, 756);
             filterButton.Name = "filterButton";
             filterButton.Size = new Size(112, 34);
             filterButton.TabIndex = 2;
@@ -213,7 +213,7 @@
             matrixFilterChoiceGroupBox.Controls.Add(identicalityFilterButton);
             matrixFilterChoiceGroupBox.Controls.Add(edgeDetectionFilterChoice);
             matrixFilterChoiceGroupBox.Controls.Add(customFilter);
-            matrixFilterChoiceGroupBox.Location = new Point(332, 213);
+            matrixFilterChoiceGroupBox.Location = new Point(333, 213);
             matrixFilterChoiceGroupBox.Name = "matrixFilterChoiceGroupBox";
             matrixFilterChoiceGroupBox.Size = new Size(342, 537);
             matrixFilterChoiceGroupBox.TabIndex = 1;
@@ -247,7 +247,7 @@
             // shiftNumericUpDown
             // 
             shiftNumericUpDown.Location = new Point(123, 396);
-            shiftNumericUpDown.Maximum = new decimal(new int[] { 10, 0, 0, 0 });
+            shiftNumericUpDown.Maximum = new decimal(new int[] { 128, 0, 0, 0 });
             shiftNumericUpDown.Name = "shiftNumericUpDown";
             shiftNumericUpDown.Size = new Size(192, 31);
             shiftNumericUpDown.TabIndex = 18;
@@ -467,7 +467,7 @@
             filterUsageGroupBox.Controls.Add(circleBrushRadiusTrackBar);
             filterUsageGroupBox.Controls.Add(circleBrushButton);
             filterUsageGroupBox.Controls.Add(fullImageButton);
-            filterUsageGroupBox.Location = new Point(332, 3);
+            filterUsageGroupBox.Location = new Point(330, 3);
             filterUsageGroupBox.Name = "filterUsageGroupBox";
             filterUsageGroupBox.Size = new Size(342, 204);
             filterUsageGroupBox.TabIndex = 0;

@@ -14,8 +14,7 @@ namespace GK_Proj3
     public partial class Form1 : Form
     {
         private Bitmap? imageBitmap;
-        private Bitmap? oryginalImageBitmap;
-        private Color[,]? imageColors;
+        private Color[,]? oryginalImageColors;
         private Filter? filter;
         private FilterType filterType;
         private byte shift;
@@ -29,7 +28,6 @@ namespace GK_Proj3
         private Point? brushPoint;
         private int brushRadius;
         private bool brushPainting;
-        private Color[,]? brushFilteredImageColors;
         public Form1()
         {
             InitializeComponent();
@@ -41,9 +39,19 @@ namespace GK_Proj3
             identicalityFilterButton.Checked = true;
             shift = 0;
             m = new float[3, 3];
+
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    m[i, j] = 1.0f;
+                }
+            }
+
             redCounts = new int[256];
             greenCounts = new int[256];
             blueCounts = new int[256];
+            updateCharts();
             brushRadius = circleBrushRadiusTrackBar.Value;
         }
 
@@ -55,14 +63,17 @@ namespace GK_Proj3
                 if (fileDialog.ShowDialog() == DialogResult.OK)
                 {
                     imageBitmap = new(Image.FromFile(fileDialog.FileName));
-                    oryginalImageBitmap = new(Image.FromFile(fileDialog.FileName));
-                    imagePictureBox.Image = oryginalImageBitmap;
-                    imageColors = new Color[oryginalImageBitmap.Width, oryginalImageBitmap.Height];
-                    for (int i = 0; i < oryginalImageBitmap.Width; i++)
+                    imagePictureBox.Image = imageBitmap;
+                    oryginalImageColors = new Color[imageBitmap.Width, imageBitmap.Height];
+                    zeroColorCounts();
+                    for (int y = 0; y < imageBitmap.Height; y++)
                     {
-                        for (int j = 0; j < oryginalImageBitmap.Height; j++)
+                        for (int x = 0; x < imageBitmap.Width; x++)
                         {
-                            imageColors[i, j] = oryginalImageBitmap.GetPixel(i, j);
+                            oryginalImageColors[x, y] = imageBitmap.GetPixel(x, y);
+                            redCounts[oryginalImageColors[x, y].R]++;
+                            greenCounts[oryginalImageColors[x, y].G]++;
+                            blueCounts[oryginalImageColors[x, y].B]++;
                         }
                     }
                     updateCharts();
@@ -76,43 +87,13 @@ namespace GK_Proj3
             brushRadius = circleBrushRadiusTrackBar.Value;
         }
 
-        private void setBitmapPixels()
+        private void zeroColorCounts()
         {
-            if (imageColors is null)
-            {
-                return;
-            }
-            imageBitmap = new Bitmap(imageColors.GetLength(0), imageColors.GetLength(1));
-            for (int i = 0; i < imageColors.GetLength(0); i++)
-            {
-                for (int j = 0; j < imageColors.GetLength(1); j++)
-                {
-                    imageBitmap.SetPixel(i, j, imageColors[i, j]);
-                }
-            }
-            imagePictureBox.Image = imageBitmap;
-        }
-
-        private void countColors()
-        {
-            if (imageColors is null)
-            {
-                return;
-            }
-
             for (int i = 0; i < 256; i++)
             {
-                redCounts[i] = greenCounts[i] = blueCounts[i] = 0;
-            }
-
-            for (int i = 0; i < imageColors.GetLength(0); i++)
-            {
-                for (int j = 0; j < imageColors.GetLength(1); j++)
-                {
-                    redCounts[imageColors[i, j].R]++;
-                    greenCounts[imageColors[i, j].G]++;
-                    blueCounts[imageColors[i, j].B]++;
-                }
+                redCounts[i] = 0;
+                greenCounts[i] = 0;
+                blueCounts[i] = 0;
             }
         }
 
@@ -121,13 +102,14 @@ namespace GK_Proj3
             redChart.Series[0].Points.Clear();
             greenChart.Series[0].Points.Clear();
             blueChart.Series[0].Points.Clear();
-            countColors();
+
             for (int i = 0; i < 256; i++)
             {
                 redChart.Series[0].Points.AddXY(i, redCounts[i]);
                 greenChart.Series[0].Points.AddXY(i, greenCounts[i]);
                 blueChart.Series[0].Points.AddXY(i, blueCounts[i]);
             }
+
             redChart.Invalidate();
             greenChart.Invalidate();
             blueChart.Invalidate();
@@ -147,8 +129,7 @@ namespace GK_Proj3
                     FilterType.Custom => new CustomFilter(shift, divider, m),
                     _ => null
                 };
-                filter?.FilterImage(imageColors);
-                setBitmapPixels();
+                filter?.FilterImage(oryginalImageColors, imageBitmap, redCounts, greenCounts, blueCounts);
 
                 updateCharts();
                 imagePictureBox.Invalidate();
@@ -270,39 +251,29 @@ namespace GK_Proj3
 
         private void clearButton_Click(object sender, EventArgs e)
         {
-            imageBitmap = oryginalImageBitmap;
-            imagePictureBox.Image = oryginalImageBitmap;
-            if (oryginalImageBitmap is not null)
+            zeroColorCounts();
+
+            if (imageBitmap is not null && oryginalImageColors is not null)
             {
-                imageColors = new Color[oryginalImageBitmap.Width, oryginalImageBitmap.Height];
-                for (int i = 0; i < oryginalImageBitmap.Width; i++)
+                for (int y = 0; y < imageBitmap.Height; y++)
                 {
-                    for (int j = 0; j < oryginalImageBitmap.Height; j++)
+                    for (int x = 0; x < imageBitmap.Width; x++)
                     {
-                        imageColors[i, j] = oryginalImageBitmap.GetPixel(i, j);
+                        imageBitmap.SetPixel(x, y, oryginalImageColors[x, y]);
+                        redCounts[oryginalImageColors[x, y].R]++;
+                        greenCounts[oryginalImageColors[x, y].G]++;
+                        blueCounts[oryginalImageColors[x, y].B]++;
                     }
                 }
             }
+
             updateCharts();
             imagePictureBox.Invalidate();
         }
 
         private void imagePictureBox_MouseUp(object sender, MouseEventArgs e)
         {
-            if (brushPainting && brushFilteredImageColors is not null && imageColors is not null)
-            {
-                for (int x = 0; x < imageColors.GetLength(0); x++)
-                {
-                    for (int y = 0; y < imageColors.GetLength(1); y++)
-                    {
-                        imageColors[x, y] = Color.FromArgb(brushFilteredImageColors[x, y].R, 
-                                                    brushFilteredImageColors[x, y].G, brushFilteredImageColors[x, y].B);
-                    }
-                }
-            }
-            brushFilteredImageColors = null;
             brushPainting = false;
-            setBitmapPixels();
 
             updateCharts();
             imagePictureBox.Invalidate();
@@ -313,7 +284,7 @@ namespace GK_Proj3
             brushPoint = e.Location;
             if (brushPainting)
             {
-                filter?.FilterImageWithBrush(imageColors, brushFilteredImageColors, e.Location, brushRadius);
+                filter?.FilterImageWithBrush(oryginalImageColors, imageBitmap, e.Location, brushRadius, redCounts, greenCounts, blueCounts);
             }
 
             imagePictureBox.Invalidate();
@@ -333,16 +304,8 @@ namespace GK_Proj3
                 brushPainting = true;
             }
             brushPoint = e.Location;
-            brushFilteredImageColors = (imageColors is not null) ? new Color[imageColors.GetLength(0), imageColors.GetLength(1)] : null;
-            if (brushFilteredImageColors is not null && imageColors is not null)
+            if (brushPainting)
             {
-                for (int x = 0; x < brushFilteredImageColors.GetLength(0); x++)
-                {
-                    for (int y = 0; y < brushFilteredImageColors.GetLength(1); y++)
-                    {
-                        brushFilteredImageColors[x, y] = Color.FromArgb(imageColors[x, y].R, imageColors[x, y].G, imageColors[x, y].B);
-                    }
-                }
                 filter = filterType switch
                 {
                     FilterType.Identicality => new IdenticalityFilter(shift, divider),
@@ -353,7 +316,7 @@ namespace GK_Proj3
                     FilterType.Custom => new CustomFilter(shift, divider, m),
                     _ => null
                 };
-                filter?.FilterImageWithBrush(imageColors, brushFilteredImageColors, e.Location, brushRadius);
+                filter?.FilterImageWithBrush(oryginalImageColors, imageBitmap, e.Location, brushRadius, redCounts, greenCounts, blueCounts);
             }
             imagePictureBox.Invalidate();
         }
